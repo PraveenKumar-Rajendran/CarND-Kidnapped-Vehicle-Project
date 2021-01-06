@@ -56,6 +56,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   // This line creates a normal (Gaussian) distribution for theta
   normal_distribution<double> dist_theta(theta, std_theta);
   
+  //Took Reference from Program Gaussian Sampling from Implementation of Particle filter lesson
   //sampling from the above normal distributions for each particle.
   for (int i = 0; i < num_particles; ++i) {
     Particle single_particle;
@@ -70,6 +71,8 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
   }
 
   is_initialized = true; //Making sure that init function is never run again for the next steps.
+  std::cout << "Particles initialized! :) \n";
+
 
 }
 
@@ -82,6 +85,28 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
    *  http://en.cppreference.com/w/cpp/numeric/random/normal_distribution
    *  http://www.cplusplus.com/reference/random/default_random_engine/
    */
+
+  // Random Gaussian noise to contribute to sensor noise.
+  normal_distribution<double> dist_x(0, std_pos[0]);
+  normal_distribution<double> dist_y(0, std_pos[1]);
+  normal_distribution<double> dist_theta(0, std_pos[2]);
+  
+  //Formula is referred from Yaw Rate and Velocity section of Motion model lesson of the nanodegree program
+  // Add measurements to each particle
+  for (int i = 0; i < num_particles; i++) {
+    if (fabs(yaw_rate) >= 0.00001) {
+      particles[i].x = particles[i].x + (velocity / yaw_rate) * (sin(particles[i].theta + yaw_rate * delta_t) - sin(particles[i].theta));
+      particles[i].y = particles[i].y + (velocity / yaw_rate) * (cos(particles[i].theta) - cos(particles[i].theta + yaw_rate * delta_t));
+      particles[i].theta = particles[i].theta + yaw_rate * delta_t;
+    }
+    else {
+      particles[i].x = particles[i].x + velocity * delta_t * cos(particles[i].theta);
+      particles[i].y = particles[i].y + velocity * delta_t * sin(particles[i].theta);
+    }
+  // Add random Gaussian noise to each particle
+  particles[i].x = particles[i].x + dist_x(gen);
+  particles[i].y = particles[i].y + dist_y(gen);
+  particles[i].theta = particles[i].theta + dist_theta(gen);
 
 }
 
