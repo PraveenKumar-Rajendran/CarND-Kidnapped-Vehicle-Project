@@ -167,6 +167,7 @@ void ParticleFilter::resample() {
   std::discrete_distribution<> distribution_weights(weights.begin(), weights.end());
   vector<Particle> resampled_Particles;
   
+  // NOTE: particles are sampled in such a way that it is proportional to its weight. ie, More the weight more the probability that it will get sampled repeatedly.
   //Loop over number of particles to create new ones with their probability of their weight
   for(int i = 0; i < num_particles; i++) {
     int selected_index_weight_prob = distribution_weights(gen);
@@ -177,7 +178,7 @@ void ParticleFilter::resample() {
   particles.clear();
   weights.clear();
 
-  particles = resampled_Particles;
+  particles = resampled_Particles; //Assign new set of particles with the resampled particles.
   
   std::cout<<"Finished Resampling! :) \n";
 
