@@ -125,10 +125,10 @@ void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted, vector<Landm
 
   // Data Association: using Nearest Neighbor technique [ NOTE: works well in most cases however it is not efficient when particle density and Map density is high. ]
   for(LandmarkObs& OBS: observations){
-    double min_distance = numeric_limits<double>::max();    // For each observation setting very high value then setting minimum value in the following for loop
+    double min_distance = std::numeric_limits<double>::max();    // For each observation setting very high value then setting minimum value in the following for loop
     for(LandmarkObs& PRED: predicted){
       double distance = dist(OBS.x, OBS.y, PRED.x, PRED.y);
-      if(d < min_distance){	
+      if(distance < min_distance){	
 	min_distance = distance;
 	OBS.id = PRED.id;  //Associating each observation to the closest landmark(nearest neighbour)
   // NOTE : //complexity is o(no of observations * no of predictions );
