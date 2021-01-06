@@ -21,6 +21,10 @@
 using std::string;
 using std::vector;
 using std::normal_distribution;
+using std::uniform_int_distribution;
+using std::uniform_real_distribution;
+
+
 std::default_random_engine gen;
 
 
@@ -234,23 +238,58 @@ void ParticleFilter::resample() {
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
 
-  std::discrete_distribution<> distribution_weights(weights.begin(), weights.end());
-  vector<Particle> resampled_Particles;
+
+
+
+  // std::discrete_distribution<> distribution_weights(weights.begin(), weights.end());
+  // vector<Particle> resampled_Particles;
   
-  // NOTE: particles are sampled in such a way that it is proportional to its weight. ie, More the weight more the probability that it will get sampled repeatedly.
-  //Loop over number of particles to create new ones with their probability of their weight
-  for(int i = 0; i < num_particles; i++) {
-    int selected_index_weight_prob = distribution_weights(gen);
-    resampled_Particles.push_back(particles[selected_index_weight_prob]);
-  }
+  // // NOTE: particles are sampled in such a way that it is proportional to its weight. ie, More the weight more the probability that it will get sampled repeatedly.
+  // //Loop over number of particles to create new ones with their probability of their weight
+  // for(int i = 0; i < num_particles; i++) {
+  //   int selected_index_weight_prob = distribution_weights(gen);
+  //   resampled_Particles.push_back(particles[selected_index_weight_prob]);
+  // }
 
   // // Clear vectors
   // particles.clear();
   // weights.clear();
 
-  particles = resampled_Particles; //Assign new set of particles with the resampled particles.
+  // particles = resampled_Particles; //Assign new set of particles with the resampled particles.
   
-  std::cout<<"Finished Resampling! :) \n";
+  // std::cout<<"Finished Resampling! :) \n";
+
+  vector<Particle> new_particles;
+
+  // get all of the current weights
+  vector<double> weights;
+  for (int i = 0; i < num_particles; i++) {
+    weights.push_back(particles[i].weight);
+  }
+
+  // generate random starting index for resampling wheel
+  uniform_int_distribution<int> uniintdist(0, num_particles-1);
+  auto index = uniintdist(gen);
+
+  // get max weight
+  double max_weight = *max_element(weights.begin(), weights.end());
+
+  // uniform random distribution [0.0, max_weight)
+  uniform_real_distribution<double> unirealdist(0.0, max_weight);
+
+  double beta = 0.0;
+
+  // spin the resample wheel!
+  for (int i = 0; i < num_particles; i++) {
+    beta += unirealdist(gen) * 2.0;
+    while (beta > weights[index]) {
+      beta -= weights[index];
+      index = (index + 1) % num_particles;
+    }
+    new_particles.push_back(particles[index]);
+  }
+
+  particles = new_particles;
 
 }
 
