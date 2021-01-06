@@ -111,6 +111,8 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
 
 }
 
+}
+
 void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted, vector<LandmarkObs>& observations) {
   /**
    * TODO: Find the predicted measurement that is closest to each 
@@ -171,7 +173,7 @@ void ParticleFilter::resample() {
   //Loop over number of particles to create new ones with their probability of their weight
   for(int i = 0; i < num_particles; i++) {
     int selected_index_weight_prob = distribution_weights(gen);
-    resampled_Particles.push_back(particles[selected_index_weight_prob])
+    resampled_Particles.push_back(particles[selected_index_weight_prob]);
   }
 
   // Clear vectors
