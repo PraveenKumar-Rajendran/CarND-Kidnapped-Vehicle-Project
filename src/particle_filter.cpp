@@ -43,7 +43,7 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    *   (and others in this file).
    */
   // TODO: Set the number of particles
-  num_particles = 50;  // Experimenting with 50 particles as of now.
+  num_particles = 100;  // Experimenting with 50 particles as of now.
 
   double std_x = std[0]; // standard deviation of x [m]
   double std_y = std[1]; // standard deviation of y [m]
