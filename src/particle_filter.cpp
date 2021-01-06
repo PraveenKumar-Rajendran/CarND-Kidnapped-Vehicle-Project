@@ -111,8 +111,7 @@ void ParticleFilter::prediction(double delta_t, double std_pos[],
 
 }
 
-void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted, 
-                                     vector<LandmarkObs>& observations) {
+void ParticleFilter::dataAssociation(vector<LandmarkObs> predicted, vector<LandmarkObs>& observations) {
   /**
    * TODO: Find the predicted measurement that is closest to each 
    *   observed measurement and assign the observed measurement to this 
@@ -164,6 +163,23 @@ void ParticleFilter::resample() {
    * NOTE: You may find std::discrete_distribution helpful here.
    *   http://en.cppreference.com/w/cpp/numeric/random/discrete_distribution
    */
+
+  std::discrete_distribution<> distribution_weights(weights.begin(), weights.end());
+  vector<Particle> resampled_Particles;
+  
+  //Loop over number of particles to create new ones with their probability of their weight
+  for(int i = 0; i < num_particles; i++) {
+    int selected_index_weight_prob = distribution_weights(gen);
+    resampled_Particles.push_back(particles[selected_index_weight_prob])
+  }
+
+  // Clear vectors
+  particles.clear();
+  weights.clear();
+
+  particles = resampled_Particles;
+  
+  std::cout<<"Finished Resampling! :) \n";
 
 }
 
