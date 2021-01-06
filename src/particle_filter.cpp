@@ -244,9 +244,9 @@ void ParticleFilter::resample() {
     resampled_Particles.push_back(particles[selected_index_weight_prob]);
   }
 
-  // Clear vectors
-  particles.clear();
-  weights.clear();
+  // // Clear vectors
+  // particles.clear();
+  // weights.clear();
 
   particles = resampled_Particles; //Assign new set of particles with the resampled particles.
   
