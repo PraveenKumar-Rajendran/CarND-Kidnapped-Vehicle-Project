@@ -12,7 +12,7 @@
 #include <iostream>
 #include <iterator>
 #include <numeric>
-#include <random>
+#include <random>  // // Need this for sampling from distributions
 #include <string>
 #include <vector>
 
@@ -20,7 +20,19 @@
 
 using std::string;
 using std::vector;
+using std::normal_distribution;
+std::default_random_engine gen;
 
+
+  /**
+   * init Initializes particle filter by initializing particles to Gaussian
+   *   distribution around first position and all the weights to 1.
+   * @param x Initial x position [m] (simulated estimate from GPS)
+   * @param y Initial y position [m]
+   * @param theta Initial orientation [rad]
+   * @param std[] Array of dimension 3 [standard deviation of x [m], 
+   *   standard deviation of y [m], standard deviation of yaw [rad]]
+   */
 void ParticleFilter::init(double x, double y, double theta, double std[]) {
   /**
    * TODO: Set the number of particles. Initialize all particles to 
@@ -30,7 +42,34 @@ void ParticleFilter::init(double x, double y, double theta, double std[]) {
    * NOTE: Consult particle_filter.h for more information about this method 
    *   (and others in this file).
    */
-  num_particles = 0;  // TODO: Set the number of particles
+  // TODO: Set the number of particles
+  num_particles = 50;  // Experimenting with 50 particles as of now.
+
+  double std_x = std[0]; // standard deviation of x [m]
+  double std_y = std[1]; // standard deviation of y [m]
+  double std_theta = std[2]; // standard deviation of yaw [rad]
+
+  // This line creates a normal (Gaussian) distribution for x
+  normal_distribution<double> dist_x(x, std_x);
+  // This line creates a normal (Gaussian) distribution for x
+  normal_distribution<double> dist_y(y, std_y);
+  // This line creates a normal (Gaussian) distribution for theta
+  normal_distribution<double> dist_theta(theta, std_theta);
+  
+  //sampling from the above normal distributions for each particle.
+  for (int i = 0; i < num_particles; ++i) {
+    Particle single_particle;
+
+    single_particle.id = i;
+    single_particle.x = dist_x(gen);
+    single_particle.y = dist_y(gen);
+    single_particle.theta = dist_theta(gen);
+    single_particle.weight = 1.0;  //Randomly initializing it to 1
+
+    particles.push_back(single_particle); //Particle Element detail is added to the vector at the end.
+  }
+
+  is_initialized = true; //Making sure that init function is never run again for the next steps.
 
 }
 
